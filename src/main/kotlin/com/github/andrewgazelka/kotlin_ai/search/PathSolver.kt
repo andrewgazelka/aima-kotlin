@@ -1,5 +1,6 @@
 package com.github.andrewgazelka.kotlin_ai.search
 
+import kotlinx.coroutines.channels.SendChannel
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -33,7 +34,7 @@ fun straightLineHeuristic(goal: Vector<Int>): Heuristic<Vector<Int>> = { current
 fun <T> noHeuristic(): Heuristic<T> = { 0.0 }
 
 
-class AStarPathSolver<K, V>(private val heuristic: Heuristic<V>) : PathSolver<K, V> {
+class AStarPathSolver<K, V>(private val heuristic: Heuristic<V>, private val channel: SendChannel<K>? = null) : PathSolver<K, V> {
 
     // https://stackoverflow.com/questions/29872664/add-key-and-value-into-an-priority-queue-and-sort-by-key-in-java
     override fun solve(problem: SearchProblem<K, V>): SolverResult<K> {
@@ -53,6 +54,7 @@ class AStarPathSolver<K, V>(private val heuristic: Heuristic<V>) : PathSolver<K,
             if (problem.isEnd(keyOn)) return SolverResult.Found(frontier.fullPath(on), on.value)
             explored.add(keyOn)
             for (to in graph.connections(keyOn)) {
+                channel?.offer(to.end)
                 val restrictOnFrontier = to.end in explored
                 frontier.progress(on, to, restrictOnFrontier)
             }

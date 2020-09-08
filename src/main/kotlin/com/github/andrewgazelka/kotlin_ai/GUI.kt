@@ -3,6 +3,7 @@ package com.github.andrewgazelka.kotlin_ai
 import com.github.andrewgazelka.kotlin_ai.search.*
 import javafx.scene.paint.Color
 import javafx.scene.text.FontWeight
+import kotlinx.coroutines.channels.Channel
 import tornadofx.*
 import java.io.File
 
@@ -39,17 +40,34 @@ class HelloWorld : View() {
                 radius = 5.0
             }
         }
-        val (traj, dist) =
-            AStarPathSolver<String, NamedPoint>(noHeuristic()).solve(problem) as? SolverResult.Found ?: return@group
+        val channel = Channel<String>(Channel.UNLIMITED)
+        val solver = AStarPathSolver<String, NamedPoint>(noHeuristic(), channel)
+        val (traj, _) = solver.solve(problem) as? SolverResult.Found ?: return@group
         path {
             stroke = Color.AQUA
             strokeWidth = 2.0
-            val (_,x,y) = graph[traj.first()]!!
+            val (_, x, y) = graph[traj.first()]!!
             moveTo(x, y)
-            traj.asSequence().drop(1).forEach {key ->
-                val (_,x,y) = graph[key]!!
+            traj.asSequence().drop(1).forEach { key ->
+                val (_, x, y) = graph[key]!!
                 lineTo(x, y)
             }
+        }
+        val pointer = circle {
+            fill = Color.BLUEVIOLET
+            radius = 10.0
+        }
+
+        timeline {
+            generateSequence { channel.poll() }
+                .forEachIndexed {i, key ->
+                    println("each")
+                    keyframe(i.seconds) {
+                        val (_, x, y) = graph[key]!!
+                        keyvalue(pointer.centerXProperty(), x)
+                        keyvalue(pointer.centerYProperty(), y)
+                    }
+                }
         }
     }
 }
