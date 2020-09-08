@@ -7,6 +7,8 @@ data class To<T>(val end: T, val distance: Int){
     fun addDistance(dx: Int) = To(end, distance + dx)
 }
 
+fun <K,V> UndirectedGraph<K,V>.grabTo(from: K, to:K ): To<K>? = this.connections(from).firstOrNull { it.end  == to}
+
 interface UndirectedGraph<K, V> {
     fun connections(key: K): List<To<K>>
     val entries: Set<Map.Entry<K, V>>

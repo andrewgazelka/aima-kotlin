@@ -1,13 +1,11 @@
 package com.github.andrewgazelka.kotlin_ai.search
 
-import com.github.andrewgazelka.kotlin_ai.util.pQueueOf
-import com.github.andrewgazelka.kotlin_ai.util.removeFirst
 import java.util.*
 import kotlin.collections.ArrayList
 
 sealed class SolverResult<K> {
     class Fail<K> : SolverResult<K>()
-    data class Found<K>(val path: List<To<K>>, val dist: Int) : SolverResult<K>()
+    data class Found<K>(val path: List<K>, val dist: Int) : SolverResult<K>()
 }
 
 interface PathSolver<K, V> {
@@ -25,7 +23,7 @@ class RandomPathSolver<K, V> : PathSolver<K, V> {
             trajectory.add(randomAction)
             state = randomAction.end
         } while (!problem.isEnd(state))
-        return SolverResult.Found(trajectory, trajectory.distance)
+        return SolverResult.Found(trajectory.map { it.end }, trajectory.distance)
     }
 }
 
@@ -34,10 +32,6 @@ typealias Heuristic<V> = (current: V) -> Double // TODO: good practice?
 fun straightLineHeuristic(goal: Vector<Int>): Heuristic<Vector<Int>> = { current -> current.l1norm(goal).toDouble() }
 fun <T> noHeuristic(): Heuristic<T> = { 0.0 }
 
-fun <K> PriorityQueue<To<K>>.removeByKey(key: K) = this.removeFirst { it.end == key }
-fun <K> PriorityQueue<To<K>>.containsKey(key: K) = this.any { it.end == key }
-fun <K> PriorityQueue<To<K>>.getByKey(key: K): To<K>? = this.firstOrNull { it.end == key }
-
 
 class AStarPathSolver<K, V>(private val heuristic: Heuristic<V>) : PathSolver<K, V> {
 
@@ -45,34 +39,25 @@ class AStarPathSolver<K, V>(private val heuristic: Heuristic<V>) : PathSolver<K,
     override fun solve(problem: SearchProblem<K, V>): SolverResult<K> {
 
         val graph = problem.graph
-        var key = problem.start
+        var keyOn = problem.start
 
-        val frontier = pQueueOf(To(key, 0)) { (key, dist) ->
+        val frontier = Frontier(init = keyOn) { dist, key ->
             dist + heuristic(graph[key]!!)
         }
 
-
         val explored = HashSet<K>()
-
-        val trajectory = ArrayList<To<K>>()
 
         do {
             if (frontier.isEmpty()) return SolverResult.Fail()
-            val on = frontier.poll()
-            key = on.end
-            if (problem.isEnd(key)) return SolverResult.Found(trajectory, on.distance)
-            explored.add(key)
-            for (localTo in graph.connections(key)) {
-                val globalTo = localTo.addDistance(on.distance)
-                val child = localTo.end
-                val frontierChild by lazy { frontier.getByKey(child) }
-                if (child !in explored && frontierChild != null) {
-                    frontier.add(globalTo) // keep track of previous distances
-                } else if (frontierChild == null) {
-                    frontier.add(globalTo)
-                } else if (frontierChild!!.distance > globalTo.distance) {
-                    frontier.removeByKey(child)
-                }
+            val on = frontier.pollNode()
+            keyOn = on.key
+            if (problem.isEnd(keyOn)){
+                return SolverResult.Found(frontier.fullPath(on), on.value)
+            }
+            explored.add(keyOn)
+            for (to in graph.connections(keyOn)) {
+                val restrictOnFrontier = to.end in explored
+                frontier.progress(on, to, restrictOnFrontier)
             }
         } while (true)
     }
