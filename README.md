@@ -1,0 +1,3 @@
+# kotlin-ai
+
+Becausue rust was too hard...
