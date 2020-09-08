@@ -1,0 +1,83 @@
+Arad:
+  x: 91
+  y: 492
+  Zerind: 75
+  Sibiu: 140
+  Timisoara: 118
+Bucharest:
+  x: 400
+  y: 327
+  Urziceni: 85
+  Pitesti: 101
+  Giurgiu: 90
+  Fagaras: 211
+Craiova:
+  x: 253
+  y: 288
+  Drobeta: 120
+  Rimnicu: 146
+  Pitesti: 138
+Drobeta:
+  x: 165
+  y: 299
+  Mehadia: 75
+Eforie:
+  x: 562
+  y: 293
+  Hirsova: 86
+Fagaras:
+  x: 305
+  y: 449
+  Sibiu: 99
+Giurgiu:
+  x: 375
+  y: 270
+Hirsova:
+  x: 534
+  y: 350
+  Urziceni: 98
+Iasi:
+  x: 473
+  y: 506
+  Vaslui: 92
+  Neamt: 87
+Lugoj:
+  x: 165
+  y: 379
+  Timisoara: 111
+  Mehadia: 70
+Mehadia:
+  x: 168
+  y: 339
+Neamt:
+  x: 406
+  y: 537
+Oradea:
+  x: 131
+  y: 571
+  Zerind: 71
+  Sibiu: 151
+Pitesti:
+  x: 320
+  y: 368
+  Rimnicu: 97
+Rimnicu:
+  x: 233
+  y: 410
+  Sibiu: 80
+Sibiu:
+  x: 207
+  y: 457
+Timisoara:
+  x: 94
+  y: 410
+Urziceni:
+  x: 456
+  y: 350
+  Vaslui: 142
+Vaslui:
+  x: 509
+  y: 444
+Zerind:
+  x: 108
+  y: 531
