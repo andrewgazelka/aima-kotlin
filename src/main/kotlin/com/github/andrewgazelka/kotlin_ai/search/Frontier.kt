@@ -15,7 +15,7 @@ class Frontier<K>(init: K? = null, private val sortedBy: (Double, K) -> Comparab
     }
 
     fun isEmpty() = queue.isEmpty()
-    fun pollNode() = queue.poll()
+    fun pollNode(): Node<K,Int>? = queue.poll()
 
     private fun removeByKey(key: K) = queue.removeFirst { it.key == key }
     private fun getNodeByKey(key: K) = queue.firstOrNull { it.key == key }

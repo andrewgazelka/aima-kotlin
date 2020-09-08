@@ -11,6 +11,7 @@ fun <K,V> UndirectedGraph<K,V>.grabTo(from: K, to:K ): To<K>? = this.connections
 
 interface UndirectedGraph<K, V> {
     fun connections(key: K): List<To<K>>
+    val allConnections: Iterable<Connection<K>>
     val entries: Set<Map.Entry<K, V>>
     operator fun get(key: K): V?
 
@@ -31,6 +32,7 @@ interface UndirectedGraph<K, V> {
                 override val entries: Set<Map.Entry<K, V>> get() = map.entries
 
                 override fun get(key: K): V? = map[key]
+                override val allConnections = connections
             }
         }
     }

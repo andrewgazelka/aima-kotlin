@@ -48,12 +48,9 @@ class AStarPathSolver<K, V>(private val heuristic: Heuristic<V>) : PathSolver<K,
         val explored = HashSet<K>()
 
         do {
-            if (frontier.isEmpty()) return SolverResult.Fail()
-            val on = frontier.pollNode()
+            val on = frontier.pollNode() ?: return SolverResult.Fail()
             keyOn = on.key
-            if (problem.isEnd(keyOn)){
-                return SolverResult.Found(frontier.fullPath(on), on.value)
-            }
+            if (problem.isEnd(keyOn)) return SolverResult.Found(frontier.fullPath(on), on.value)
             explored.add(keyOn)
             for (to in graph.connections(keyOn)) {
                 val restrictOnFrontier = to.end in explored
