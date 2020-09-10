@@ -1,5 +1,6 @@
 package com.github.andrewgazelka.kotlin_ai.search
 
+import com.github.andrewgazelka.kotlin_ai.search.util.Frontier
 import com.github.andrewgazelka.kotlin_ai.util.random
 import kotlinx.coroutines.channels.SendChannel
 import java.util.*
@@ -10,16 +11,16 @@ sealed class SolverResult<K> {
     data class Found<K>(val path: List<K>, val dist: Int) : SolverResult<K>()
 }
 
-interface PathSolver<K, V> {
-    fun solve(problem: SearchProblem<K, V>): SolverResult<K>
+interface PathSolver<T> {
+    fun solve(problem: SearchProblem<T>): SolverResult<T>
 }
 
 val List<To<*>>.distance get() = foldRight(0) { x, acc -> acc + x.distance }
 
-class RandomPathSolver<K, V> : PathSolver<K, V> {
-    override fun solve(problem: SearchProblem<K, V>): SolverResult<K> {
+class RandomPathSolver<T> : PathSolver<T> {
+    override fun solve(problem: SearchProblem<T>): SolverResult<T> {
         var state = problem.start
-        val trajectory = ArrayList<To<K>>()
+        val trajectory = ArrayList<To<T>>()
         do {
             val randomAction = problem.graph.connections(state).random()
             trajectory.add(randomAction)
@@ -29,25 +30,24 @@ class RandomPathSolver<K, V> : PathSolver<K, V> {
     }
 }
 
-typealias Heuristic<V> = (current: V) -> Double // TODO: good practice?
+typealias Heuristic<T> = (current: T) -> Double // TODO: good practice?
 
 fun straightLineHeuristic(goal: Vector<Int>): Heuristic<Vector<Int>> = { current -> current.l1norm(goal).toDouble() }
 fun <T> noHeuristic(): Heuristic<T> = { 0.0 }
 
 
-class AStarPathSolver<K, V>(private val heuristic: Heuristic<V>, private val channel: SendChannel<K>? = null) : PathSolver<K, V> {
+class AStarPathSolver<T>(private val heuristic: Heuristic<T>, private val channel: SendChannel<T>? = null) :
+    PathSolver<T> {
 
     // https://stackoverflow.com/questions/29872664/add-key-and-value-into-an-priority-queue-and-sort-by-key-in-java
-    override fun solve(problem: SearchProblem<K, V>): SolverResult<K> {
+    override fun solve(problem: SearchProblem<T>): SolverResult<T> {
 
         val graph = problem.graph
         var keyOn = problem.start
 
-        val frontier = Frontier(init = keyOn) { dist, key ->
-            dist + heuristic(graph[key]!!)
-        }
+        val frontier = Frontier(init = keyOn) { dist, value -> dist + heuristic(value) }
 
-        val explored = HashSet<K>()
+        val explored = HashSet<T>()
 
         do {
             val on = frontier.pollNode() ?: return SolverResult.Fail()

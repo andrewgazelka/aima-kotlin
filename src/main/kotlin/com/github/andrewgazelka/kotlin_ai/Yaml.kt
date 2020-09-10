@@ -1,12 +1,13 @@
 package com.github.andrewgazelka.kotlin_ai
 
-import com.github.andrewgazelka.kotlin_ai.search.NamedPoint
 import com.github.andrewgazelka.kotlin_ai.search.Connection
 import com.github.andrewgazelka.kotlin_ai.search.Graph
+import com.github.andrewgazelka.kotlin_ai.search.GraphWithData
+import com.github.andrewgazelka.kotlin_ai.search.NamedPoint
 import java.io.File
 
 private val whiteSpace = """^\s.*""".toRegex()
-fun File.to2DGraph(): Graph<String, NamedPoint> {
+fun File.to2DGraph(): GraphWithData<String, NamedPoint> {
     val connectionList = mutableListOf<Connection<String>>()
     val cityMap = HashMap<String, NamedPoint>()
     var name: String? = null
@@ -28,5 +29,6 @@ fun File.to2DGraph(): Graph<String, NamedPoint> {
         }
     }
     cityMap[name!!] = NamedPoint(name, x, y)
-    return Graph.from(cityMap, connectionList)
+    val graph = Graph.from(connectionList)
+    return GraphWithData.wrap(graph, cityMap)
 }

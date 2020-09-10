@@ -1,8 +1,11 @@
 package com.github.andrewgazelka.kotlin_ai.search.nine
 
 import com.github.andrewgazelka.kotlin_ai.search.Graph
+import com.github.andrewgazelka.kotlin_ai.search.Heuristic
 import com.github.andrewgazelka.kotlin_ai.search.To
+import com.github.andrewgazelka.kotlin_ai.util.cachedFunc
 import com.github.andrewgazelka.kotlin_ai.util.swap
+import kotlin.math.absoluteValue
 
 private fun Int.adjacent(end: Int) = sequence {
     when (this@adjacent) {
@@ -15,7 +18,17 @@ private fun Int.adjacent(end: Int) = sequence {
     }
 }
 
-data class Index2D(val x: Int, val y: Int)
+data class Index2D(val x: Int, val y: Int) {
+    fun manhatten(other: Index2D): Int {
+        return (other.x - x).absoluteValue + (other.y - y).absoluteValue
+    }
+    companion object {
+        fun from(index: Int, rowLength: Int): Index2D {
+            return Index2D(index % rowLength, index / rowLength);
+        }
+    }
+}
+
 data class NineProblem(val collection: List<Int>) {
 
     operator fun get(x: Int, y: Int): Int {
@@ -37,16 +50,16 @@ data class NineProblem(val collection: List<Int>) {
         return get(index2D.x, index2D.y)
     }
 
-    fun emptyIndexRaw(): Int {
+    private fun emptyIndexRaw(): Int {
         return collection.indexOf(0)
     }
 
-    fun emptyIndex(): Index2D {
+    private fun emptyIndex(): Index2D {
         val idx = emptyIndexRaw()
         return Index2D(idx % 3, idx / 3);
     }
 
-    fun swap(a: Index2D, b: Index2D): NineProblem {
+    private fun swap(a: Index2D, b: Index2D): NineProblem {
         val aIdx = a.x + a.y * 3
         val bIdx = b.x + b.y * 3
         val newList = collection.toMutableList().apply { swap(aIdx, bIdx) }
@@ -76,15 +89,30 @@ data class NineProblem(val collection: List<Int>) {
     }
 }
 
-object NineProblemGraph : Graph<NineProblem, Nothing> {
+object NineProblemGraph : Graph<NineProblem> {
     override fun connections(key: NineProblem): Sequence<To<NineProblem>> {
         return key.possibleNewStates().map { To(it, 1) } // all moves have a value of 1
     }
+}
 
-    override fun get(key: NineProblem): Nothing? {
-        TODO("Not yet implemented")
+private val valueToIndex = cachedFunc<NineProblem, IntArray> { nineProblem ->
+    val arr = IntArray(9)
+    nineProblem.collection.forEachIndexed { index, value ->
+        arr[value] = index
     }
+    arr
+}
 
+fun manhatten(goal: NineProblem): Heuristic<NineProblem> = { x ->
+    val map = valueToIndex(goal)
+    var sum = 0
+    x.collection.forEachIndexed { index, value ->
+        val otherIndex = map[value]
+        val otherIndex2D = Index2D.from(otherIndex, 3)
+        val currentIndex2D = Index2D.from(index, 3)
+        sum += otherIndex2D.manhatten(currentIndex2D)
+    }
+    sum.toDouble()
 }
 
 fun main() {

@@ -40,15 +40,6 @@ fun <T> MutableIterable<T>.removeFirst(block: (T) -> Boolean) = with(iterator())
     return@with null
 }
 
-// TODO: does not work NPE
-fun <K, V> List<K>.toPath(graph: Graph<K, V>): List<To<K>> {
-    val start = listOf(To(first(), 0))
-    return this.foldRight(start) { k, acc ->
-        val to = graph.grabTo(start.last().end, k)
-        acc + listOf(to!!)
-    }
-}
-
 fun <A, B> Sequence<A>.cartesianProduct(other: Sequence<B>) = sequence<Pair<A, B>> {
     for (a in this@cartesianProduct) {
         for (b in other) {
