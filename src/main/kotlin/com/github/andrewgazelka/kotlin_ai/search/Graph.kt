@@ -7,16 +7,14 @@ data class To<T>(val end: T, val distance: Int){
     fun addDistance(dx: Int) = To(end, distance + dx)
 }
 
-fun <K,V> UndirectedGraph<K,V>.grabTo(from: K, to:K ): To<K>? = this.connections(from).firstOrNull { it.end  == to}
+fun <K,V> Graph<K,V>.grabTo(from: K, to:K ): To<K>? = this.connections(from).firstOrNull { it.end  == to}
 
-interface UndirectedGraph<K, V> {
-    fun connections(key: K): List<To<K>>
-    val allConnections: Iterable<Connection<K>>
-    val entries: Set<Map.Entry<K, V>>
+interface Graph<K, V> {
+    fun connections(key: K): Sequence<To<K>>
     operator fun get(key: K): V?
 
     companion object {
-        fun <K, V> from(map: Map<K, V>, connections: Iterable<Connection<K>>): UndirectedGraph<K, V> {
+        fun <K, V> from(map: Map<K, V>, connections: Iterable<Connection<K>>): Graph<K, V> {
 
             val connectionMap = HashMap<K, ArrayList<To<K>>>()
             connections.forEach { con ->
@@ -24,15 +22,13 @@ interface UndirectedGraph<K, V> {
                 connectionMap.getOrPut(con.to) { ArrayList() }.add(To(con.from, con.distance))
             }
 
-            return object : UndirectedGraph<K, V> {
-                override fun connections(key: K): List<To<K>> {
-                    return connectionMap[key] ?: emptyList()
+            return object : Graph<K, V> {
+                override fun connections(key: K): Sequence<To<K>> {
+                    return connectionMap[key]?.asSequence() ?: emptySequence()
                 }
 
-                override val entries: Set<Map.Entry<K, V>> get() = map.entries
 
                 override fun get(key: K): V? = map[key]
-                override val allConnections = connections
             }
         }
     }
