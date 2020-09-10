@@ -7,12 +7,13 @@ data class To<T>(val end: T, val distance: Int)
 
 fun <T> Graph<T>.grabTo(from: T, to: T): To<T>? = this.connections(from).firstOrNull { it.end == to }
 
+operator fun <K,V> GraphWithData<K,V>.get(value: K): V = getValue(value)!!
 interface GraphWithData<K,V> : Graph<K> {
-    operator fun get(value: K): V?
+    fun getValue(value: K): V?
     companion object {
         fun <K,V> wrap(graph: Graph<K>, map: Map<K,V>): GraphWithData<K, V> {
             return object : GraphWithData<K,V>{
-                override fun get(value: K): V? {
+                override fun getValue(value: K): V? {
                     return map[value]
                 }
 

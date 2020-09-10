@@ -10,3 +10,12 @@ fun <K,V> cachedFunc(block: (K) -> V): (K) -> V{
         }
     }
 }
+
+fun <A,B,C> ((A) -> B).pipe(block: (B) -> C): (A) -> C{
+    return {input ->
+        val b = this(input)
+        block(b)
+    }
+}
+
+
