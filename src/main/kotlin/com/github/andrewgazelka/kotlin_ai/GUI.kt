@@ -41,7 +41,8 @@ class HelloWorld : View() {
             }
         }
         val channel = Channel<String>(Channel.UNLIMITED)
-        val solver = AStarPathSolver<String, NamedPoint>(noHeuristic(), channel)
+        val goal = graph[problem.end]!!
+        val solver = AStarPathSolver<String, NamedPoint>(straightLineHeuristic(goal), channel)
         val (traj, _) = solver.solve(problem) as? SolverResult.Found ?: return@group
         path {
             stroke = Color.AQUA
