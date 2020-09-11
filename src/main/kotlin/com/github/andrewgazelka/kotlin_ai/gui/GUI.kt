@@ -55,7 +55,7 @@ class MyView : View() {
     init {
         GlobalScope.launch {
             val result = nineProblem() as? SolverResult.Found ?: return@launch
-            while(true){
+            while (true) {
                 fire(UpdateNineProblem(result.path.first()))
                 delay(2_000)
                 result.path.asSequence().drop(1).forEach { problem ->

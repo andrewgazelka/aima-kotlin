@@ -1,8 +1,5 @@
 package com.github.andrewgazelka.kotlin_ai.search.util
 
-import com.github.andrewgazelka.kotlin_ai.search.Graph
-import java.util.*
-
 //class GraphProgressor<K,V>(private val graph: Graph<K, V>){
 //    fun progress(start: K, scanner: Scanner){
 //        println("Starting with $start");

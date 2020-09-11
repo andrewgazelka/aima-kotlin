@@ -36,7 +36,8 @@ fun straightLineHeuristic(goal: Vector<Int>): Heuristic<Vector<Int>> = { current
 fun <T> noHeuristic(): Heuristic<T> = { 0.0 }
 
 
-class AStarPathSolver<T>(private val heuristic: Heuristic<T>, private val channel: SendChannel<T>? = null) : PathSolver<T> {
+class AStarPathSolver<T>(private val heuristic: Heuristic<T>, private val channel: SendChannel<T>? = null) :
+    PathSolver<T> {
 
     // https://stackoverflow.com/questions/29872664/add-key-and-value-into-an-priority-queue-and-sort-by-key-in-java
     override suspend fun solve(problem: SearchProblem<T>): SolverResult<T> {

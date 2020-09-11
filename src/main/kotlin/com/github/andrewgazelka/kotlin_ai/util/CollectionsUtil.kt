@@ -45,7 +45,7 @@ fun <A, B> Sequence<A>.cartesianProduct(other: Sequence<B>) = sequence {
     }
 }
 
-fun <T> MutableList<T>.swap(indexA: Int, indexB: Int){
+fun <T> MutableList<T>.swap(indexA: Int, indexB: Int) {
     val temp = this[indexA]
     this[indexA] = this[indexB]
     this[indexB] = temp

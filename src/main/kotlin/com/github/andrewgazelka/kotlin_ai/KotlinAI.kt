@@ -5,11 +5,7 @@ import com.github.andrewgazelka.kotlin_ai.search.nine.NineProblem
 import com.github.andrewgazelka.kotlin_ai.search.nine.NineProblemGraph
 import com.github.andrewgazelka.kotlin_ai.search.nine.manhatten
 import com.github.andrewgazelka.kotlin_ai.util.pipe
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.collectIndexed
-import kotlinx.coroutines.flow.consumeAsFlow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.io.File
 import kotlin.time.ExperimentalTime
