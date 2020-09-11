@@ -8,6 +8,9 @@ data class Point2D(val x: Double, val y: Double){
     fun dist2(other: Point2D): Double {
         return (x-other.x).pow(2) + (y-other.y).pow(2)
     }
+    operator fun times(scalar: Double): Point2D {
+        return Point2D(x * scalar, y * scalar)
+    }
 }
 data class TSP(val points: List<Point2D>): Value{
     val distance2: Double get(){

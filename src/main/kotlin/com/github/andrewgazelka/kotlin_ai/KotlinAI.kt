@@ -9,6 +9,7 @@ import com.github.andrewgazelka.kotlin_ai.search.nine.NineProblem
 import com.github.andrewgazelka.kotlin_ai.search.nine.NineProblemGraph
 import com.github.andrewgazelka.kotlin_ai.search.nine.manhatten
 import com.github.andrewgazelka.kotlin_ai.util.pipe
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.runBlocking
 import java.io.File
@@ -34,16 +35,16 @@ suspend fun nineProblem() = coroutineScope {
     solver.solve(graph.problem(start = nineProblemStart, end = nineProblemEnd))
 }
 
-fun hillClimb() {
-    val start = TSP.random(20)
-    val climb = HillClimb<TSP>(100)
+suspend fun hillClimb(channel: Channel<TSP>, count: Int) {
+    val start = TSP.random(count)
+    val climb = HillClimb(1_000_000, channel)
     val optimize = climb.optimize(TSPSequence, start, OptimizeMethod.MIN)
     println("optimized $optimize")
 }
 
 @ExperimentalTime
 fun main() = runBlocking<Unit> {
-    hillClimb()
+//    hillClimb()
 }
 
 

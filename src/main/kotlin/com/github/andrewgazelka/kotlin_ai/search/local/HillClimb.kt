@@ -1,10 +1,13 @@
 package com.github.andrewgazelka.kotlin_ai.search.local
 
-class HillClimb<T : Value>(private val maxIterations: Int) : LocalSequenceOptimizer<T> {
+import kotlinx.coroutines.channels.SendChannel
 
-    override fun optimize(sequence: LocalSequence<T>, start: T, method: OptimizeMethod): T {
+class HillClimb<T : Value>(private val maxIterations: Int, private val channel: SendChannel<T>? = null) : LocalSequenceOptimizer<T> {
+
+    override suspend fun optimize(sequence: LocalSequence<T>, start: T, method: OptimizeMethod): T {
         var on = start
         var value = start.getValue()
+        channel?.send(on)
         var iteration = 0
         while (iteration++ < maxIterations) {
             var changed = false
@@ -16,6 +19,7 @@ class HillClimb<T : Value>(private val maxIterations: Int) : LocalSequenceOptimi
                 changed = true
             }
             if (!changed) break
+            else channel?.send(on)
         }
         return on
     }

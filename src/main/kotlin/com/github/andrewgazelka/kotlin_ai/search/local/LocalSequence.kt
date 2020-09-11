@@ -32,6 +32,6 @@ fun OptimizeMethod.optimize(original: Double, next: Double): Optimize {
 
 
 interface LocalSequenceOptimizer<T : Value> {
-    fun optimize(sequence: LocalSequence<T>, start: T, method: OptimizeMethod): T
+    suspend fun optimize(sequence: LocalSequence<T>, start: T, method: OptimizeMethod): T
 }
 

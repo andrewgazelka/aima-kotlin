@@ -57,7 +57,7 @@ fun <T> Sequence<T>.random(): T {
 
 fun <T> List<T>.allOneSwaps() = sequence {
     for (i in 0 until size) {
-        for (j in i until size) {
+        for (j in i+1 until size) {
             yield(toMutableList().apply { swap(i, j)})
         }
     }
