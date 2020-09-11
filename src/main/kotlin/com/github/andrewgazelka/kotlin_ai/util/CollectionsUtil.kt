@@ -1,8 +1,5 @@
 package com.github.andrewgazelka.kotlin_ai.util
 
-import com.github.andrewgazelka.kotlin_ai.search.To
-import com.github.andrewgazelka.kotlin_ai.search.Graph
-import com.github.andrewgazelka.kotlin_ai.search.grabTo
 import java.util.*
 
 /**
@@ -40,7 +37,7 @@ fun <T> MutableIterable<T>.removeFirst(block: (T) -> Boolean) = with(iterator())
     return@with null
 }
 
-fun <A, B> Sequence<A>.cartesianProduct(other: Sequence<B>) = sequence<Pair<A, B>> {
+fun <A, B> Sequence<A>.cartesianProduct(other: Sequence<B>) = sequence {
     for (a in this@cartesianProduct) {
         for (b in other) {
             yield(Pair(a, b))

@@ -22,6 +22,7 @@ data class Index2D(val x: Int, val y: Int) {
     fun manhatten(other: Index2D): Int {
         return (other.x - x).absoluteValue + (other.y - y).absoluteValue
     }
+
     companion object {
         fun from(index: Int, rowLength: Int): Index2D {
             return Index2D(index % rowLength, index / rowLength);
@@ -34,6 +35,11 @@ data class NineProblem(val collection: List<Int>) {
     operator fun get(x: Int, y: Int): Int {
         return collection[x + y * 3]
     }
+
+    fun rows() = collection.run {
+        listOf(subList(0, 3), subList(3, 6), subList(6, 9))
+    }
+
 
     override fun toString() = buildString {
         appendLine()

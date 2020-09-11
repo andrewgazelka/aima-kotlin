@@ -12,13 +12,13 @@ sealed class SolverResult<K> {
 }
 
 interface PathSolver<T> {
-    fun solve(problem: SearchProblem<T>): SolverResult<T>
+    suspend fun solve(problem: SearchProblem<T>): SolverResult<T>
 }
 
 val List<To<*>>.distance get() = foldRight(0) { x, acc -> acc + x.distance }
 
 class RandomPathSolver<T> : PathSolver<T> {
-    override fun solve(problem: SearchProblem<T>): SolverResult<T> {
+    override suspend fun solve(problem: SearchProblem<T>): SolverResult<T> {
         var state = problem.start
         val trajectory = ArrayList<To<T>>()
         do {
@@ -36,11 +36,10 @@ fun straightLineHeuristic(goal: Vector<Int>): Heuristic<Vector<Int>> = { current
 fun <T> noHeuristic(): Heuristic<T> = { 0.0 }
 
 
-class AStarPathSolver<T>(private val heuristic: Heuristic<T>, private val channel: SendChannel<T>? = null) :
-    PathSolver<T> {
+class AStarPathSolver<T>(private val heuristic: Heuristic<T>, private val channel: SendChannel<T>? = null) : PathSolver<T> {
 
     // https://stackoverflow.com/questions/29872664/add-key-and-value-into-an-priority-queue-and-sort-by-key-in-java
-    override fun solve(problem: SearchProblem<T>): SolverResult<T> {
+    override suspend fun solve(problem: SearchProblem<T>): SolverResult<T> {
 
         val graph = problem.graph
         var keyOn = problem.start
@@ -55,7 +54,7 @@ class AStarPathSolver<T>(private val heuristic: Heuristic<T>, private val channe
             if (problem.isEnd(keyOn)) return SolverResult.Found(frontier.fullPath(on), on.value)
             explored.add(keyOn)
             for (to in graph.connections(keyOn)) {
-                channel?.offer(to.end)
+                channel?.send(to.end)
                 val restrictOnFrontier = to.end in explored
                 frontier.progress(on, to, restrictOnFrontier)
             }
