@@ -54,3 +54,11 @@ fun <T> MutableList<T>.swap(indexA: Int, indexB: Int) {
 fun <T> Sequence<T>.random(): T {
     return this.toList().random()
 }
+
+fun <T> List<T>.allOneSwaps() = sequence {
+    for (i in 0 until size) {
+        for (j in i until size) {
+            yield(toMutableList().apply { swap(i, j)})
+        }
+    }
+}

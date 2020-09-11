@@ -18,8 +18,8 @@ interface GraphWithData<K, V> : Graph<K> {
                     return map[value]
                 }
 
-                override fun connections(key: K): Sequence<To<K>> {
-                    return graph.connections(key)
+                override fun connections(value: K): Sequence<To<K>> {
+                    return graph.connections(value)
                 }
 
             }
@@ -28,7 +28,7 @@ interface GraphWithData<K, V> : Graph<K> {
 }
 
 interface Graph<T> {
-    fun connections(key: T): Sequence<To<T>>
+    fun connections(value: T): Sequence<To<T>>
 
     companion object {
         fun <T> from(connections: Iterable<Connection<T>>): Graph<T> {
@@ -40,8 +40,8 @@ interface Graph<T> {
             }
 
             return object : Graph<T> {
-                override fun connections(key: T): Sequence<To<T>> {
-                    return connectionMap[key]?.asSequence() ?: emptySequence()
+                override fun connections(value: T): Sequence<To<T>> {
+                    return connectionMap[value]?.asSequence() ?: emptySequence()
                 }
             }
         }

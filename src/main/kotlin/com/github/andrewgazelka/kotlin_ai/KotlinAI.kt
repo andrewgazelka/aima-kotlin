@@ -1,6 +1,10 @@
 package com.github.andrewgazelka.kotlin_ai
 
 import com.github.andrewgazelka.kotlin_ai.search.*
+import com.github.andrewgazelka.kotlin_ai.search.local.HillClimb
+import com.github.andrewgazelka.kotlin_ai.search.local.OptimizeMethod
+import com.github.andrewgazelka.kotlin_ai.search.local.TSP
+import com.github.andrewgazelka.kotlin_ai.search.local.TSPSequence
 import com.github.andrewgazelka.kotlin_ai.search.nine.NineProblem
 import com.github.andrewgazelka.kotlin_ai.search.nine.NineProblemGraph
 import com.github.andrewgazelka.kotlin_ai.search.nine.manhatten
@@ -26,14 +30,20 @@ suspend fun nineProblem() = coroutineScope {
     val nineProblemStart = NineProblem.of(7, 2, 4, 5, 0, 6, 8, 3, 1)
     val nineProblemEnd = NineProblem((0 until 9).toList())
     val graph = NineProblemGraph
-
     val solver = AStarPathSolver(manhatten(nineProblemEnd))
     solver.solve(graph.problem(start = nineProblemStart, end = nineProblemEnd))
 }
 
+fun hillClimb() {
+    val start = TSP.random(20)
+    val climb = HillClimb<TSP>(100)
+    val optimize = climb.optimize(TSPSequence, start, OptimizeMethod.MIN)
+    println("optimized $optimize")
+}
+
 @ExperimentalTime
 fun main() = runBlocking<Unit> {
-    nineProblem()
+    hillClimb()
 }
 
 

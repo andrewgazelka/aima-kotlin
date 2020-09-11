@@ -50,7 +50,43 @@ fun Group.displayNineProblem(nineProblem: NineProblem) {
 data class UpdateNineProblem(val nineProblem: NineProblem) : FXEvent(EventBus.RunOn.ApplicationThread)
 
 @ExperimentalTime
-class MyView : View() {
+class NineProblemView : View() {
+
+    init {
+        GlobalScope.launch {
+            val result = nineProblem() as? SolverResult.Found ?: return@launch
+            while (true) {
+                fire(UpdateNineProblem(result.path.first()))
+                delay(2_000)
+                result.path.asSequence().drop(1).forEach { problem ->
+                    delay(100)
+                    fire(UpdateNineProblem(problem))
+                }
+                delay(2_000)
+            }
+        }
+    }
+
+    lateinit var grp: Group
+    override val root = borderpane {
+        style {
+            padding = box(20.px)
+        }
+        center {
+            grp = group {
+                subscribe<UpdateNineProblem> { (nineProblem) ->
+                    grp.children.clear()
+                    displayNineProblem(nineProblem)
+                }
+            }
+
+        }
+    }
+
+}
+
+@ExperimentalTime
+class TSPProblem : View() {
 
     init {
         GlobalScope.launch {

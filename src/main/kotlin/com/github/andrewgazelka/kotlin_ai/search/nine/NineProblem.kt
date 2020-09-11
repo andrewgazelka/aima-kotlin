@@ -96,8 +96,8 @@ data class NineProblem(val collection: List<Int>) {
 }
 
 object NineProblemGraph : Graph<NineProblem> {
-    override fun connections(key: NineProblem): Sequence<To<NineProblem>> {
-        return key.possibleNewStates().map { To(it, 1) } // all moves have a value of 1
+    override fun connections(value: NineProblem): Sequence<To<NineProblem>> {
+        return value.possibleNewStates().map { To(it, 1) } // all moves have a value of 1
     }
 }
 
