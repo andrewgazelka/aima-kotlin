@@ -1,9 +1,5 @@
 package com.github.andrewgazelka.kotlin_ai.search.local
 
-import java.lang.Double.min
-
-data class State<T>(val value: T, val score: Double)
-
 interface Value {
     fun getValue(): Double
 }
@@ -22,10 +18,10 @@ sealed class Optimize {
     class Better(val newValue: Double) : Optimize()
 }
 
-fun OptimizeMethod.optimize(original: Double, next: Double): Optimize {
+fun OptimizeMethod.optimize(original: Double?, next: Double, temp: Double = 0.0): Optimize {
     when (this) {
-        OptimizeMethod.MAX -> if (next >= original) return Optimize.Better(next)
-        OptimizeMethod.MIN -> if (next <= original) return Optimize.Better(next)
+        OptimizeMethod.MAX -> if (original == null || next + temp >= original) return Optimize.Better(next)
+        OptimizeMethod.MIN -> if (original == null || next - temp <= original) return Optimize.Better(next)
     }
     return Optimize.Worse
 }

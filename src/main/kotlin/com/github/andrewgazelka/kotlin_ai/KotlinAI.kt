@@ -1,10 +1,7 @@
 package com.github.andrewgazelka.kotlin_ai
 
 import com.github.andrewgazelka.kotlin_ai.search.*
-import com.github.andrewgazelka.kotlin_ai.search.local.HillClimb
-import com.github.andrewgazelka.kotlin_ai.search.local.OptimizeMethod
-import com.github.andrewgazelka.kotlin_ai.search.local.TSP
-import com.github.andrewgazelka.kotlin_ai.search.local.TSPSequence
+import com.github.andrewgazelka.kotlin_ai.search.local.*
 import com.github.andrewgazelka.kotlin_ai.search.nine.NineProblem
 import com.github.andrewgazelka.kotlin_ai.search.nine.NineProblemGraph
 import com.github.andrewgazelka.kotlin_ai.search.nine.manhatten
@@ -38,6 +35,21 @@ suspend fun nineProblem() = coroutineScope {
 suspend fun hillClimb(channel: Channel<TSP>, count: Int) {
     val start = TSP.random(count)
     val climb = HillClimb(1_000_000, channel)
+    val optimize = climb.optimize(TSPSequence, start, OptimizeMethod.MIN)
+    println("optimized $optimize")
+}
+
+suspend fun anneal(channel: Channel<TSP>, count: Int) {
+    val start = TSP.random(count)
+    val tempSequence = generateSequence(10.0) { it * 0.999 }
+        .onEach {
+            println(it)
+        }
+//        .takeWhile { it > 0.0001 }
+        .map {
+            it * it // squaring because we are using dist2
+        }
+    val climb = SimulatedAnnealing(tempSequence, channel)
     val optimize = climb.optimize(TSPSequence, start, OptimizeMethod.MIN)
     println("optimized $optimize")
 }

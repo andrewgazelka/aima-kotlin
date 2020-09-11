@@ -1,6 +1,6 @@
 package com.github.andrewgazelka.kotlin_ai.gui
 
-import com.github.andrewgazelka.kotlin_ai.hillClimb
+import com.github.andrewgazelka.kotlin_ai.anneal
 import com.github.andrewgazelka.kotlin_ai.nineProblem
 import com.github.andrewgazelka.kotlin_ai.search.SolverResult
 import com.github.andrewgazelka.kotlin_ai.search.local.TSP
@@ -14,7 +14,7 @@ import javafx.stage.Stage
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectIndexed
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.launch
 import tornadofx.*
@@ -98,15 +98,16 @@ class TSPProblem : View() {
 
     init {
         GlobalScope.launch {
-            val channel = Channel<TSP>()
+            val channel = Channel<TSP>(Channel.UNLIMITED)
             launch {
-                channel.consumeAsFlow().collect {
-                    fire(UpdateTSP(it))
-                    delay(1)
-                }
+                channel.consumeAsFlow()
+                    .collectIndexed { i, tsp ->
+                        if(i % 1 == 0) fire(UpdateTSP(tsp))
+                    }
             }
-            while(true){
-                hillClimb(channel, 250)
+            while (true) {
+                delay(4_000)
+                anneal(channel, 250)
                 delay(2_000)
             }
         }
