@@ -36,22 +36,17 @@ suspend fun hillClimb(channel: Channel<TSP>, count: Int) {
     val start = TSP.random(count)
     val climb = HillClimb(1_000_000, channel)
     val optimize = climb.optimize(TSPSequence, start, OptimizeMethod.MIN)
-    println("optimized $optimize")
 }
 
 suspend fun anneal(channel: Channel<TSP>, count: Int) {
     val start = TSP.random(count)
-    val tempSequence = generateSequence(10.0) { it * 0.999 }
-        .onEach {
-            println(it)
-        }
+    val tempSequence = generateSequence(100.0) { it * 0.995 }
 //        .takeWhile { it > 0.0001 }
         .map {
             it * it // squaring because we are using dist2
         }
     val climb = SimulatedAnnealing(tempSequence, channel)
-    val optimize = climb.optimize(TSPSequence, start, OptimizeMethod.MIN)
-    println("optimized $optimize")
+    climb.optimize(TSPSequence, start, OptimizeMethod.MIN)
 }
 
 @ExperimentalTime

@@ -31,7 +31,7 @@ data class TSP(val points: List<Point2D>): Value{
     }
 
     companion object {
-        fun random(count: Int, xRange: Double = 100.0, yRange: Double = 100.0): TSP {
+        fun random(count: Int, xRange: Double = 1.0, yRange: Double = 1.0): TSP {
             val points = (0 until count).map {
                 Point2D(Random.nextDouble(xRange), Random.nextDouble(yRange))
             }

@@ -9,6 +9,8 @@ import javafx.scene.Group
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
+import javafx.scene.shape.StrokeLineCap
+import javafx.scene.shape.StrokeLineJoin
 import javafx.scene.text.Font
 import javafx.stage.Stage
 import kotlinx.coroutines.GlobalScope
@@ -18,7 +20,8 @@ import kotlinx.coroutines.flow.collectIndexed
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.launch
 import tornadofx.*
-import kotlin.math.pow
+import java.lang.Double.min
+import kotlin.random.Random
 import kotlin.time.ExperimentalTime
 
 fun HBox.numBox(num: Int) = stackpane {
@@ -102,13 +105,13 @@ class TSPProblem : View() {
             launch {
                 channel.consumeAsFlow()
                     .collectIndexed { i, tsp ->
-                        if(i % 1 == 0) fire(UpdateTSP(tsp))
+                        fire(UpdateTSP(tsp))
+//                        delay(100)
                     }
             }
             while (true) {
-                delay(4_000)
-                anneal(channel, 250)
-                delay(2_000)
+                anneal(channel, 100)
+//                delay(500)
             }
         }
     }
@@ -117,25 +120,36 @@ class TSPProblem : View() {
     override val root = borderpane {
         style {
             padding = box(20.px)
+            backgroundColor += Color.BLACK
         }
         center {
             grp = group {
                 subscribe<UpdateTSP> { (tsp) ->
                     grp.children.clear()
                     path {
-                        stroke = Color.BLACK
-                        val points = tsp.points.map { it * 5.0 }
+                        val range = 1000 * 10
+                        val time = System.currentTimeMillis() % range
+                        val proportion = time.toDouble() / range
+                        val scale = min(currentStage!!.width, currentStage!!.height) * 0.7
+//                        strokeLineCap = StrokeLineCap.ROUND
+//                        strokeLineJoin = StrokeLineJoin.MITER
+                        stroke = Color.hsb(proportion * 360.0, 1.0, 1.0, 0.8)
+                        strokeWidth = 15.0
+                        val points = tsp.points.map { it * scale }
                         val first = points.first()
                         moveTo(first.x, first.y)
                         points.asSequence().drop(1).forEach { (x, y) ->
-                            lineTo(x, y)
+//                            val controlX = Random.nextDouble(scale)
+//                            val controlY = Random.nextDouble(scale)
+                            this.lineTo(x, y)
+//                            lineTo(x, y)
                         }
                         lineTo(first.x, first.y)
                     }
-                    val num = "%.2f".format(tsp.getValue().pow(0.5))
-                    text(num) {
-                        stroke = Color.RED
-                    }
+//                    val num = "%.2f".format(tsp.getValue().pow(0.5))
+//                    text(num) {
+//                        stroke = Color.RED
+//                    }
 
                 }
             }
@@ -149,6 +163,7 @@ class TSPProblem : View() {
 class MyApp : App(TSPProblem::class) {
     override fun start(stage: Stage) {
         stage.minHeight = 400.0
+        stage.isFullScreen = true
         stage.minWidth = 800.0
         super.start(stage)
     }
